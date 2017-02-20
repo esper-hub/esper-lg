@@ -1,0 +1,29 @@
+<div class="card"
+     *ngIf="device">
+  <h5 class="card-header">
+    Device: {{device.id}}
+    <small>[{{device.type}}]</small>
+  </h5>
+
+  <div class="card-block">
+    <dl class="row">
+      <dt class="col-sm-3">Firmware Version</dt>
+      <dd class="col-sm-9">{{device.firmwareVersion}}</dd>
+
+      <dt class="col-sm-3">SDK Version</dt>
+      <dd class="col-sm-9">{{device.sdkVersion}}</dd>
+
+      <dt class="col-sm-3">Bootloader Version</dt>
+      <dd class="col-sm-9">{{device.bootVersion}}</dd>
+
+      <dt class="col-sm-3">Chip ID</dt>
+      <dd class="col-sm-9">{{device.chipId}}</dd>
+
+      <dt class="col-sm-3">Flash ID</dt>
+      <dd class="col-sm-9">{{device.flashId}}</dd>
+
+      <dt class="col-sm-3">Current ROM</dt>
+      <dd class="col-sm-9">{{device.rom ? "First" : "Second"}}</dd>
+    </dl>
+  </div>
+</div>

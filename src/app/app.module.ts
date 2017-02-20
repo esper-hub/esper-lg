@@ -27,7 +27,9 @@ export function mqttServiceFactory() {
         path: ':id',
         component: DeviceDetailComponent
       }
-    ]),
+    ], {
+      useHash: true,
+    }),
     MqttModule.forRoot({
       provide: MqttService,
       useFactory: mqttServiceFactory

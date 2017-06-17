@@ -17,24 +17,36 @@
 <div class="row">
   <div class="col-md-3">
     <div class="card mb-3"
-         *ngFor="let type of getTypes()">
+         *ngFor="let type of getDevices()">
       <h5 class="card-header justify-content-between">
-        {{type}}
+        {{type[0]}}
       </h5>
       <div class="list-group list-group-flush">
-        <a class="list-group-item list-group-item-action
+        <a href="#"
+           class="list-group-item list-group-item-action
                   justify-content-between"
-           [routerLink]="[id]"
-           routerLinkActive="active"
-           *ngFor="let id of getDevicesByType(type)">
-          {{id}}
-          <span class="badge badge-success">Online</span>
+           *ngFor="let device of type[1]"
+           (click)="selectDevice(device)"
+           [ngClass]="{'active': device == selectedDevice}">
+          <span [ngClass]="{'font-italic': !device.alias}">
+            {{device.alias ? device.alias.name : 'Unknown'}}
+          </span>
+
+          <div class="d-flex w-100 justify-content-between">
+            <small>{{device.id}}</small>
+            <span class="badge"
+                  [ngClass]="{'badge-success': device.alive,
+                              'badge-danger': !device.alive}">
+              {{device.alive ? 'Online' : 'Offline'}}
+            </span>
+          </div>
         </a>
       </div>
     </div>
   </div>
 
-  <div class="col-md-9">
-    <router-outlet></router-outlet>
+  <div class="col-md-9"
+       *ngIf="selectedDevice">
+    <device [device]="selectedDevice"></device>
   </div>
 </div>

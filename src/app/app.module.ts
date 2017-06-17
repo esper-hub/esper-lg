@@ -1,13 +1,16 @@
 import {BrowserModule} from "@angular/platform-browser";
 import {NgModule} from "@angular/core";
 import {HttpModule} from "@angular/http";
-import {RouterModule} from "@angular/router";
 import {AppComponent} from "./app.component";
-import {DeviceDetailComponent} from "./device-detail.component";
+import {DetailComponent} from "./detail.component";
 import {MqttModule, MqttService} from "angular2-mqtt";
+import {ConfigService} from "./config.service";
+import {AliasService} from "./alias.service";
+import {DeviceService} from "./device.service";
 
 export function mqttServiceFactory() {
   return new MqttService({
+    connectOnCreate: true,
     hostname: "172.23.172.33",
     port: 80,
     path: "/lg/mqtt"
@@ -17,25 +20,17 @@ export function mqttServiceFactory() {
 @NgModule({
   declarations: [
     AppComponent,
-    DeviceDetailComponent,
+    DetailComponent,
   ],
   imports: [
     BrowserModule,
     HttpModule,
-    RouterModule.forRoot([
-      {
-        path: ':id',
-        component: DeviceDetailComponent
-      }
-    ], {
-      useHash: true,
-    }),
     MqttModule.forRoot({
       provide: MqttService,
       useFactory: mqttServiceFactory
     })
   ],
-  providers: [],
+  providers: [ConfigService, DeviceService, AliasService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

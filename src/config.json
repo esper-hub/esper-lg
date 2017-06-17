@@ -1,0 +1,17 @@
+{
+  "aliases": {
+    "url": "/aliases.json"
+  },
+
+  "mqtt": {
+    "host": "172.23.172.33",
+    "port": 80,
+    "path": "/lg/mqtt",
+
+    "deviceTopic": "maglab/space/esper",
+    "updateTopic": "maglab/space/esper/update"
+  },
+
+  "aliveAge": 120000,
+  "decayAge": 1209600000
+}

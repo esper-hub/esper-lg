@@ -1,8 +1,18 @@
 <div class="card"
      *ngIf="device">
   <h5 class="card-header">
-    Device: {{device.id}}
-    <small>[{{device.type}}]</small>
+    <span *ngIf="device.alias?.name">
+      {{device.type}}: {{device.alias.name}}
+    </span>
+    <span *ngIf="!device.alias?.name">
+      {{device.type}}
+    </span>
+    <small>[{{device.id}}]</small>
+    <span class="float-right"
+          *ngIf="device.alias?.link">
+      <a target="_blank"
+         [attr.href]="device.alias.link">Details</a>
+    </span>
   </h5>
 
   <div class="card-block">
@@ -24,6 +34,15 @@
 
       <dt class="col-sm-3">Current ROM</dt>
       <dd class="col-sm-9">{{device.rom ? "First" : "Second"}}</dd>
+
+      <dt class="col-sm-3">Startup Time</dt>
+      <dd class="col-sm-9">{{device.timeStartup | date:'medium'}}</dd>
+
+      <dt class="col-sm-3">Connect Time</dt>
+      <dd class="col-sm-9">{{device.timeConnect | date:'medium'}}</dd>
+
+      <dt class="col-sm-3">Current Time</dt>
+      <dd class="col-sm-9">{{device.timeCurrent | date:'medium'}}</dd>
     </dl>
   </div>
 </div>

@@ -1,36 +1,33 @@
 import {Component} from "@angular/core";
-import {DeviceService} from "./device.service";
-import {Device} from "./device";
 import {Observable} from "rxjs";
+
+import {DeviceService, Device} from "./device.service";
+
+import * as _ from "lodash";
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  providers: [DeviceService],
 })
 export class AppComponent {
+  readonly connected: Observable<boolean>;
 
-  // selectedDevice: Device = null;
-
-  readonly connected : Observable<boolean>;
+  selectedDevice: Device;
 
   constructor(private readonly devices: DeviceService) {
     this.connected = devices.connected;
   }
 
-  getTypes(): Set<string> {
-    return this.devices.getTypes();
+  getDevices() {
+    return _.toPairs(_.groupBy(this.devices.getDevices(), (device) => device.type));
   }
 
-  getDevicesByType(type: string): Set<string> {
-    return this.devices.getDevicesByType(type);
+  selectDevice(device: Device) {
+    this.selectedDevice = device;
   }
 
-  getDevice(id: string): Device {
-    return this.devices.getDeviceById(id);
-  }
-
-  triggerUpdate() {
-    this.devices.triggerUpdates();
+  triggerUpdate(): Promise<void> {
+    return this.devices.triggerUpdates();
   }
 }

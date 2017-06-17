@@ -1,84 +1,108 @@
 import {Injectable} from "@angular/core";
-import {Device} from "./device";
 import {MqttService, MqttConnectionState} from "angular2-mqtt";
+
 import {Observable} from "rxjs";
-import "rxjs/add/operator/map";
+import {ConfigService} from "./config.service";
+import {Alias, AliasService} from "./alias.service";
+
 import {TextDecoder} from "text-encoding";
+
+
+export class Device {
+  id: string;
+  type: string;
+
+  firmwareVersion: string;
+  sdkVersion: string;
+  bootVersion: string;
+
+  chipId: string;
+  flashId: string;
+
+  rom: boolean;
+
+  timeStartup: number;
+  timeConnect: number;
+  timeCurrent: number;
+
+  age: number;
+  alive: boolean;
+
+  alias: Alias;
+}
 
 @Injectable()
 export class DeviceService {
 
-  private static readonly TOPIC = "maglab/space/esper";
-
-  private static readonly DECODER: TextDecoder = new TextDecoder("utf-8");
-
   public readonly connected: Observable<boolean>;
 
-  private devices: {[id: string]: Device} = {};
+  private readonly devices: Map<string, Device>;
 
-  constructor(private readonly mqtt: MqttService) {
+  constructor(private readonly mqtt: MqttService,
+              private readonly config: ConfigService,
+              private readonly aliases: AliasService) {
     this.connected = this.mqtt.state.map((s) => s == MqttConnectionState.CONNECTED);
 
-    this.mqtt.observe(`${DeviceService.TOPIC}/+/info`).subscribe((msg) => {
-      console.log(msg);
+    this.devices = new Map();
 
-      let device = new Device();
+    this.config.getConfig().then(
+      config => this.mqtt.observe(`${config.mqtt.deviceTopic}/+/info`)
+        .subscribe(msg => {
+          let device = new Device();
 
-      // Get 2nd-last path element as ID
-      device.id = msg.topic.split("/").reverse()[1];
+          // Get 2nd-last path element as ID
+          // TODO: Use regex to verify format and extract ID
+          device.id = msg.topic.split("/").reverse()[1];
 
-      // Parse the message
-      for (let line of DeviceService.DECODER.decode(msg.payload).split("\n")) {
-        let [key, value] = line.split("=", 2);
+          // Fetch alias data
+          this.aliases.getAliasById(device.id).then(alias => {
+            device.alias = alias;
+          });
 
-        switch (key) {
-          case "DEVICE":
-            device.type = value;
-            break;
+          // Parse the message
+          for (let line of new TextDecoder("ASCII").decode(msg.payload).split("\n")) {
+            let [key, value] = line.split("=", 2);
 
-          case "ESPER":
-            device.firmwareVersion = value;
-            break;
+            switch (key) {
+              case "DEVICE":       device.type = value; break;
+              case "ESPER":        device.firmwareVersion = value; break;
+              case "SDK":          device.sdkVersion = value; break;
+              case "BOOT":         device.bootVersion = value; break;
+              case "CHIP":         device.chipId = value; break;
+              case "FLASH":        device.flashId = value; break;
+              case "ROM":          device.rom = +value == 1; break;
+              case "TIME_STARTUP": device.timeStartup = +value; break;
+              case "TIME_CONNECT": device.timeConnect = +value; break;
+              case "TIME_CURRENT": device.timeCurrent = +value; break;
+            }
+          }
 
-          case "SDK":
-            device.sdkVersion = value;
-            break;
+          // device.age = _.now() - device.timeCurrent;
+          device.age = 5;
+          device.alive = device.age < config.aliveAge;
 
-          case "BOOT":
-            device.bootVersion = value;
-            break;
+          console.log(device);
 
-          case "CHIP":
-            device.chipId = value;
-            break;
-
-          case "FLASH":
-            device.flashId = value;
-            break;
-
-          case "ROM":
-            device.rom = +value == 1;
-            break;
-        }
-      }
-
-      this.devices[device.id] = device;
-    })
+          if (device.age < config.decayAge) {
+            this.devices.set(device.id, device);
+          } else {
+            this.devices.delete(device.id);
+          }
+        })
+    );
   }
 
-  getTypes(): Set<string> {
-    return new Set(Object.keys(this.devices).map((key) => this.devices[key].type));
-  }
-
-  getDevicesByType(type: string): Set<string> {
-    return new Set(Object.keys(this.devices).filter((key) => this.devices[key].type == type));
+  getDevices(): Array<Device> {
+    return Array.from(this.devices.values());
   }
 
   getDeviceById(id: string): Device {
-    return this.devices[id];
+    return this.devices.get(id);
   }
 
-  triggerUpdates() {
-    this.mqtt.publish(`${DeviceService.TOPIC}/update`, '').subscribe();
+  triggerUpdates(): Promise<void> {
+    return this.config.getConfig().then(
+      config => this.mqtt.publish(config.mqtt.updateTopic, '').toPromise()
+    );
   }
 }

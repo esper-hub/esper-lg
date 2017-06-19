@@ -7,24 +7,14 @@ import * as _ from "lodash";
 
 
 @Component({
-  selector: 'app-root',
+  selector: 'app',
   templateUrl: './app.component.html',
 })
 export class AppComponent {
   readonly connected: Observable<boolean>;
 
-  selectedDevice: Device;
-
   constructor(private readonly devices: DeviceService) {
     this.connected = devices.connected;
-  }
-
-  getDevices() {
-    return _.toPairs(_.groupBy(this.devices.getDevices(), (device) => device.type));
-  }
-
-  selectDevice(device: Device) {
-    this.selectedDevice = device;
   }
 
   triggerUpdate(): Promise<void> {

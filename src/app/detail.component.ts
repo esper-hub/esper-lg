@@ -2,7 +2,7 @@ import {Component, Input} from "@angular/core";
 import {Device} from "./device.service";
 
 @Component({
-  selector: 'device',
+  selector: 'detail',
   templateUrl: './detail.component.html',
 })
 export class DetailComponent {

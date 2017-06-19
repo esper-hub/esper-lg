@@ -1,0 +1,31 @@
+<div class="card mb-3"
+     *ngFor="let type of getDevices()">
+  <h5 class="card-header justify-content-between">
+    {{type[0]}}
+  </h5>
+  <div class="list-group list-group-flush">
+    <a href="#"
+       class="list-group-item list-group-item-action
+              justify-content-between"
+       *ngFor="let device of type[1]"
+       (click)="selection = device"
+       [class.active]="selection == device">
+      <span [class.font-italic]="!device.alias?.name">
+        {{device.alias?.name || 'Unknown'}}
+      </span>
+
+      <div class="d-flex w-100 justify-content-between"
+           [ngSwitch]="device.alive">
+        <small>{{device.id}}</small>
+        <span *ngSwitchCase="true"
+              class="badge badge-success">
+          Online
+        </span>
+        <span *ngSwitchCase="false"
+              class="badge badge-danger">
+          Offline
+        </span>
+      </div>
+    </a>
+  </div>
+</div>

@@ -1,22 +1,27 @@
 <div class="card"
      *ngIf="device">
   <h5 class="card-header">
-    <span *ngIf="device.alias?.name">
-      {{device.type}}: {{device.alias.name}}
+    <span [class.font-italic]="!device.alias?.name">
+      {{device.alias?.name || 'Unknown'}}
     </span>
-    <span *ngIf="!device.alias?.name">
-      {{device.type}}
-    </span>
-    <small>[{{device.id}}]</small>
-    <span class="float-right"
-          *ngIf="device.alias?.link">
+
+    <small *ngIf="device.alias?.link"
+          class="float-right">
       <a target="_blank"
-         [attr.href]="device.alias.link">Details</a>
-    </span>
+         [attr.href]="device.alias.link">
+        Details
+      </a>
+    </small>
   </h5>
 
   <div class="card-block">
     <dl class="row">
+      <dt class="col-sm-3">Device ID</dt>
+      <dd class="col-sm-9">{{device.id}}</dd>
+
+      <dt class="col-sm-3">Device Type</dt>
+      <dd class="col-sm-9">{{device.type}}</dd>
+
       <dt class="col-sm-3">Firmware Version</dt>
       <dd class="col-sm-9">{{device.firmwareVersion}}</dd>
 
@@ -36,13 +41,22 @@
       <dd class="col-sm-9">{{device.rom ? "First" : "Second"}}</dd>
 
       <dt class="col-sm-3">Startup Time</dt>
-      <dd class="col-sm-9">{{device.timeStartup | date:'medium'}}</dd>
+      <dd class="col-sm-9">
+        {{device.timeStartup | amTimeAgo}}
+        <small class="text-muted">{{device.timeStartup | date:'medium'}}</small>
+      </dd>
 
       <dt class="col-sm-3">Connect Time</dt>
-      <dd class="col-sm-9">{{device.timeConnect | date:'medium'}}</dd>
+      <dd class="col-sm-9">
+        {{device.timeConnect | amTimeAgo}}
+        <small class="text-muted">{{device.timeConnect | date:'medium'}}</small>
+      </dd>
 
       <dt class="col-sm-3">Current Time</dt>
-      <dd class="col-sm-9">{{device.timeCurrent | date:'medium'}}</dd>
+      <dd class="col-sm-9">
+        {{device.timeCurrent | amTimeAgo}}
+        <small class="text-muted">{{device.timeCurrent | date:'medium'}}</small>
+      </dd>
     </dl>
   </div>
 </div>

@@ -1,12 +1,14 @@
 import {BrowserModule} from "@angular/platform-browser";
 import {NgModule} from "@angular/core";
 import {HttpModule} from "@angular/http";
-import {AppComponent} from "./app.component";
-import {DetailComponent} from "./detail.component";
 import {MqttModule, MqttService} from "angular2-mqtt";
+import {MomentModule} from "angular2-moment";
 import {ConfigService} from "./config.service";
 import {AliasService} from "./alias.service";
 import {DeviceService} from "./device.service";
+import {AppComponent} from "./app.component";
+import {ListComponent} from "./list.component";
+import {DetailComponent} from "./detail.component";
 
 export function mqttServiceFactory() {
   return new MqttService({
@@ -20,6 +22,7 @@ export function mqttServiceFactory() {
 @NgModule({
   declarations: [
     AppComponent,
+    ListComponent,
     DetailComponent,
   ],
   imports: [
@@ -28,7 +31,8 @@ export function mqttServiceFactory() {
     MqttModule.forRoot({
       provide: MqttService,
       useFactory: mqttServiceFactory
-    })
+    }),
+    MomentModule
   ],
   providers: [ConfigService, DeviceService, AliasService],
   bootstrap: [AppComponent]

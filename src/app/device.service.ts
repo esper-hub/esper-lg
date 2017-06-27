@@ -7,6 +7,8 @@ import {Alias, AliasService} from "./alias.service";
 
 import {TextDecoder} from "text-encoding";
 
+import * as _ from "lodash";
+
 
 export class Device {
   id: string;
@@ -23,7 +25,7 @@ export class Device {
 
   timeStartup: number;
   timeConnect: number;
-  timeCurrent: number;
+  timeUpdated: number;
 
   age: number;
   alive: boolean;
@@ -71,14 +73,13 @@ export class DeviceService {
               case "CHIP":         device.chipId = value; break;
               case "FLASH":        device.flashId = value; break;
               case "ROM":          device.rom = +value == 1; break;
-              case "TIME_STARTUP": device.timeStartup = +value; break;
-              case "TIME_CONNECT": device.timeConnect = +value; break;
-              case "TIME_CURRENT": device.timeCurrent = +value; break;
+              case "TIME_STARTUP": device.timeStartup = +value * 1000; break;
+              case "TIME_CONNECT": device.timeConnect = +value * 1000; break;
+              case "TIME_UPDATED": device.timeUpdated = +value * 1000; break;
             }
           }
 
-          // device.age = _.now() - device.timeCurrent;
-          device.age = 5;
+          device.age = _.now() - device.timeUpdated;
           device.alive = device.age < config.aliveAge;
 
           console.log(device);

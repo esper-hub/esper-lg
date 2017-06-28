@@ -10,7 +10,10 @@
        *ngFor="let device of type[1]"
        (click)="selection = device"
        [class.active]="selection == device">
-      <span [class.font-italic]="!device.alias?.name">
+      <span [class.font-italic]="!device.alias?.name"
+            style="text-overflow: ellipsis;
+                   white-space: nowrap;
+                   overflow: hidden">
         {{device.alias?.name || 'Unknown'}}
       </span>
 

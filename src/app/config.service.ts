@@ -25,7 +25,7 @@ export class Config {
 @Injectable()
 export class ConfigService {
 
-  private url: string = '/config.json';
+  private url: string = 'config.json';
 
   private config: Promise<Config>;
 

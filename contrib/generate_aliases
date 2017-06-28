@@ -1,0 +1,38 @@
+#! /usr/bin/env python3
+
+import requests
+import json
+import sys
+
+
+if __name__ == '__main__':
+    r = requests.get('https://wiki.maglab.space/index.php?title=Spezial%3ASemantische_Suche'
+            '&q=%5B%5BKategorie%3AESPer%5D%5D'
+            '&po=%3FESPer+Device+Typ=typ%0D%0A%3FESPer+Device+ID=id%0D%0A'
+            '&eq=yes'
+            '&p%5Bformat%5D=json'
+            '&sort_num='
+            '&order_num=ASC'
+            '&p%5Blimit%5D='
+            '&p%5Boffset%5D='
+            '&p%5Blink%5D=all'
+            '&p%5Bsort%5D='
+            '&p%5Bheaders%5D=show'
+            '&p%5Bmainlabel%5D='
+            '&p%5Bintro%5D='
+            '&p%5Boutro%5D='
+            '&p%5Bsearchlabel%5D=%E2%80%A6+weitere+Ergebnisse'
+            '&p%5Bdefault%5D='
+            '&eq=yes').json()
+
+    data = {}
+
+    for result in r['results'].values():
+        id = result['printouts']['id'][0]
+        name = result['fulltext'].replace('#', ': ')
+        link = result['fullurl']
+
+        data[id] = {'name': name, 'link': link}
+
+    json.dump(data, sys.stdout)
+

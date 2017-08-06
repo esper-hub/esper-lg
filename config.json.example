@@ -4,12 +4,12 @@
   },
 
   "mqtt": {
-    "host": "172.23.172.33",
+    "host": "192.168.0.1",
     "port": 80,
     "path": "/lg/mqtt",
 
-    "deviceTopic": "maglab/space/esper",
-    "updateTopic": "maglab/space/esper/update"
+    "deviceTopic": "my/realm/esper",
+    "updateTopic": "my/realm/esper/update"
   },
 
   "aliveAge": 120000,

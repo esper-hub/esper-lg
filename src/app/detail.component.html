@@ -21,42 +21,80 @@
 
       <dt class="col-sm-3">Device Type</dt>
       <dd class="col-sm-9">{{device.type}}</dd>
+    </dl>
 
-      <dt class="col-sm-3">Firmware Version</dt>
-      <dd class="col-sm-9">{{device.firmwareVersion}}</dd>
-
-      <dt class="col-sm-3">SDK Version</dt>
-      <dd class="col-sm-9">{{device.sdkVersion}}</dd>
-
-      <dt class="col-sm-3">Bootloader Version</dt>
-      <dd class="col-sm-9">{{device.bootVersion}}</dd>
-
+    <dl class="row">
       <dt class="col-sm-3">Chip ID</dt>
       <dd class="col-sm-9">{{device.chipId}}</dd>
 
       <dt class="col-sm-3">Flash ID</dt>
       <dd class="col-sm-9">{{device.flashId}}</dd>
+    </dl>
 
+    <hr>
+    <dl class="row">
+      <dt class="col-sm-3">Firmware Version</dt>
+      <dd class="col-sm-9">{{device.version.firmware}}</dd>
+
+      <dt class="col-sm-3">SDK Version</dt>
+      <dd class="col-sm-9">{{device.version.sdk}}</dd>
+
+      <dt class="col-sm-3">Bootloader Version</dt>
+      <dd class="col-sm-9">{{device.version.boot}}</dd>
+    </dl>
+
+    <hr>
+    <dl class="row">
       <dt class="col-sm-3">Current ROM</dt>
-      <dd class="col-sm-9">{{device.rom ? "First" : "Second"}}</dd>
+      <dd class="col-sm-9">{{device.boot.rom ? "First" : "Second"}}</dd>
+    </dl>
 
+    <hr>
+    <dl class="row">
       <dt class="col-sm-3">Startup Time</dt>
       <dd class="col-sm-9">
-        {{device.timeStartup | amTimeAgo}}
-        <small class="text-muted">{{device.timeStartup | date:'medium'}}</small>
+        {{device.time.startup | amTimeAgo}}
+        <small class="text-muted">{{device.time.startup | date:'medium'}}</small>
       </dd>
 
       <dt class="col-sm-3">Connect Time</dt>
       <dd class="col-sm-9">
-        {{device.timeConnect | amTimeAgo}}
-        <small class="text-muted">{{device.timeConnect | date:'medium'}}</small>
+        {{device.time.connect | amTimeAgo}}
+        <small class="text-muted">{{device.time.connect | date:'medium'}}</small>
       </dd>
 
       <dt class="col-sm-3">Updated Time</dt>
       <dd class="col-sm-9">
-        {{device.timeUpdated | amTimeAgo}}
-        <small class="text-muted">{{device.timeUpdated | date:'medium'}}</small>
+        {{device.time.updated | amTimeAgo}}
+        <small class="text-muted">{{device.time.updated | date:'medium'}}</small>
       </dd>
+    </dl>
+
+    <hr>
+    <dl class="row">
+      <dt class="col-sm-3">IP</dt>
+      <dd class="col-sm-9">{{device.network.ip}}</dd>
+
+      <dt class="col-sm-3">Mask</dt>
+      <dd class="col-sm-9">{{device.network.mask}}</dd>
+
+      <dt class="col-sm-3">Gateway</dt>
+      <dd class="col-sm-9">{{device.network.gateway}}</dd>
+    </dl>
+
+    <hr>
+    <dl class="row">
+      <dt class="col-sm-3">SSID</dt>
+      <dd class="col-sm-9">{{device.wifi.ssid}}</dd>
+
+      <dt class="col-sm-3">BSSID</dt>
+      <dd class="col-sm-9">{{device.wifi.bssid}}</dd>
+
+      <dt class="col-sm-3">RSSI</dt>
+      <dd class="col-sm-9">{{device.wifi.rssi}}</dd>
+
+      <dt class="col-sm-3">Channel</dt>
+      <dd class="col-sm-9">{{device.wifi.channel}}</dd>
     </dl>
   </div>
 </div>

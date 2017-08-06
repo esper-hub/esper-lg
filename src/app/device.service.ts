@@ -5,27 +5,81 @@ import {Observable} from "rxjs";
 import {ConfigService} from "./config.service";
 import {Alias, AliasService} from "./alias.service";
 
-import {TextDecoder} from "text-encoding";
-
 import * as _ from "lodash";
+
+
+class DeviceInfo {
+  device: string;
+
+  chip_id: string;
+  flash_id: string;
+
+  version: {
+    esper: string;
+    sdk: string;
+    boot: number;
+  };
+
+  boot: {
+    rom: number;
+  };
+
+  time: {
+    startup: number,
+    connect: 1502080968,
+    updated: 1502080968
+  };
+
+  network: {
+    ip: string;
+    mask: string;
+    gateway: string;
+  };
+
+  wifi: {
+    ssid: string;
+    bssid: string;
+    rssi: number;
+    channel: number;
+  };
+}
 
 
 export class Device {
   id: string;
   type: string;
 
-  firmwareVersion: string;
-  sdkVersion: string;
-  bootVersion: string;
-
   chipId: string;
   flashId: string;
 
-  rom: boolean;
+  version: {
+    firmware: string;
+    sdk: string;
+    boot: number;
+  };
 
-  timeStartup: number;
-  timeConnect: number;
-  timeUpdated: number;
+  boot: {
+    rom: boolean;
+  };
+
+  time: {
+    startup: number;
+    connect: number;
+    updated: number;
+  };
+
+  network: {
+    ip: string;
+    mask: string;
+    gateway: string;
+  };
+
+  wifi: {
+    ssid: string;
+    bssid: string;
+    rssi: number;
+    channel: number;
+  };
 
   age: number;
   alive: boolean;
@@ -61,30 +115,54 @@ export class DeviceService {
           });
 
           // Parse the message
-          for (let line of new TextDecoder("ASCII").decode(msg.payload).split("\n")) {
-            let [key, value] = line.split("=", 2);
+          try {
+            let info = JSON.parse(msg.payload.toString()) as DeviceInfo;
 
-            switch (key) {
-              case "DEVICE":       device.type = value; break;
-              case "ESPER":        device.firmwareVersion = value; break;
-              case "SDK":          device.sdkVersion = value; break;
-              case "BOOT":         device.bootVersion = value; break;
-              case "CHIP":         device.chipId = value; break;
-              case "FLASH":        device.flashId = value; break;
-              case "ROM":          device.rom = +value == 1; break;
-              case "TIME_STARTUP": device.timeStartup = +value * 1000; break;
-              case "TIME_CONNECT": device.timeConnect = +value * 1000; break;
-              case "TIME_UPDATED": device.timeUpdated = +value * 1000; break;
+            device.type = info.device;
+
+            device.chipId = info.chip_id;
+            device.flashId = info.flash_id;
+
+            device.version = {
+              firmware: info.version.esper,
+              sdk: info.version.sdk,
+              boot: info.version.boot
+            };
+
+            device.boot = {
+              rom: info.boot.rom == 1,
+            };
+
+            device.time = {
+              startup: info.time.startup * 1000,
+              connect: info.time.connect * 1000,
+              updated: info.time.updated * 1000,
+            };
+
+            device.network = {
+              ip: info.network.ip,
+              mask: info.network.mask,
+              gateway: info.network.gateway,
+            };
+
+            device.wifi = {
+              ssid: info.wifi.ssid,
+              bssid: info.wifi.bssid,
+              rssi: info.wifi.rssi,
+              channel: info.wifi.channel,
+            };
+
+            device.age = _.now() - device.time.updated;
+            device.alive = device.age < this.config.aliveAge;
+
+            if (device.age < this.config.decayAge) {
+              this.devices.set(device.id, device);
+            } else {
+              this.devices.delete(device.id);
             }
-          }
 
-          device.age = _.now() - device.timeUpdated;
-          device.alive = device.age < this.config.aliveAge;
-
-          if (device.age < this.config.decayAge) {
-            this.devices.set(device.id, device);
-          } else {
-            this.devices.delete(device.id);
+          } catch(e) {
+            console.warn(e);
           }
         });
   }

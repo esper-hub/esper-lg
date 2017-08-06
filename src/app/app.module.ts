@@ -1,5 +1,5 @@
 import {BrowserModule} from "@angular/platform-browser";
-import {NgModule} from "@angular/core";
+import {NgModule, APP_INITIALIZER} from "@angular/core";
 import {HttpModule} from "@angular/http";
 import {MqttModule, MqttService} from "angular2-mqtt";
 import {MomentModule} from "angular2-moment";
@@ -10,13 +10,18 @@ import {AppComponent} from "./app.component";
 import {ListComponent} from "./list.component";
 import {DetailComponent} from "./detail.component";
 
-export function mqttServiceFactory() {
+export function mqttServiceFactory(config: ConfigService) {
   return new MqttService({
     connectOnCreate: true,
-    hostname: "172.23.172.33",
-    port: 80,
-    path: "/lg/mqtt"
+    hostname: config.mqtt.host,
+    port: config.mqtt.port,
+    path: config.mqtt.path,
+    protocol: config.mqtt.protocol || 'ws',
   });
+}
+
+export function initConfigService(config: ConfigService) {
+  return () => config.load();
 }
 
 @NgModule({
@@ -30,11 +35,21 @@ export function mqttServiceFactory() {
     HttpModule,
     MqttModule.forRoot({
       provide: MqttService,
-      useFactory: mqttServiceFactory
+      useFactory: mqttServiceFactory,
+      deps: [ConfigService]
     }),
     MomentModule
   ],
-  providers: [ConfigService, DeviceService, AliasService],
+  providers: [
+    ConfigService,
+    DeviceService,
+    AliasService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initConfigService,
+      deps: [ConfigService],
+      multi: true
+    }],
   bootstrap: [AppComponent]
 })
 export class AppModule {

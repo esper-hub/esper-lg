@@ -47,8 +47,7 @@ export class DeviceService {
 
     this.devices = new Map();
 
-    this.config.getConfig().then(
-      config => this.mqtt.observe(`${config.mqtt.deviceTopic}/+/info`)
+    this.mqtt.observe(`${this.config.mqtt.deviceTopic}/+/info`)
         .subscribe(msg => {
           let device = new Device();
 
@@ -80,17 +79,14 @@ export class DeviceService {
           }
 
           device.age = _.now() - device.timeUpdated;
-          device.alive = device.age < config.aliveAge;
+          device.alive = device.age < this.config.aliveAge;
 
-          console.log(device);
-
-          if (device.age < config.decayAge) {
+          if (device.age < this.config.decayAge) {
             this.devices.set(device.id, device);
           } else {
             this.devices.delete(device.id);
           }
-        })
-    );
+        });
   }
 
   getDevices(): Array<Device> {
@@ -102,8 +98,6 @@ export class DeviceService {
   }
 
   triggerUpdates(): Promise<void> {
-    return this.config.getConfig().then(
-      config => this.mqtt.publish(config.mqtt.updateTopic, '').toPromise()
-    );
+    return this.mqtt.publish(this.config.mqtt.updateTopic, '').toPromise();
   }
 }

@@ -17,12 +17,4 @@ export class ListComponent {
   getDevices() {
     return _.toPairs(_.groupBy(this.devices.getDevices(), (device) => device.type));
   }
-
-  // get selection() {
-  //   return this.selectionValue;
-  // }
-  //
-  // set selection(device: Device) {
-  //    this.selectionChange.emit(this.selectionValue = device);
-  // }
 }

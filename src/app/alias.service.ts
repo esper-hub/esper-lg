@@ -15,11 +15,9 @@ export class AliasService {
 
   constructor(private readonly http: Http,
               private readonly config: ConfigService) {
-    this.aliases = config.getConfig().then(
-      config => this.http.get(config.aliases.url)
+    this.aliases = this.http.get(config.aliases.url)
         .toPromise()
-        .then(response => response.json() as Map<string, Alias>)
-    );
+        .then(response => response.json() as Map<string, Alias>);
   }
 
   getAliasById(id: string): Promise<Alias> {
